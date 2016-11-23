@@ -1,0 +1,9 @@
+Coach
+Player
+Footballer
+Basketballer
+Golfer
+Golf Club Professional
+Sportsman
+Sportsperson
+Sportswoman

@@ -1,0 +1,6 @@
+name
+birthDate
+deathDate
+occupation
+nationality
+party

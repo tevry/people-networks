@@ -1,0 +1,71 @@
+#####################################
+# normalize_infobj_to_inflits
+
+# Input:	person_lookup.json
+#			infobj_to_lit_map.json
+#			filtered_infobj.txt
+#			
+
+# Output:	infobj_transformed(inflit).txt (List of pure infobox literals)
+#			infobj_transformed(links).txt (List of link labels between people)
+
+# Description:
+# Build a list of all infobox literals extracted from the infobox objects (including the resolution weird "__" links)
+# Build a second list that describes the type of connection two people have
+# Normalize the same formating for all literals
+#####################################
+
+import json
+import sys
+
+def normalize_infobj_to_inflits():
+	try:
+		f_json = open('data_extracted/person_lookup.json','r',encoding="utf8")
+	except IOError:
+		print('Need to create person_lookup.json first. (Execute write_personlist_by_type.py)')
+
+	person_lookup = json.load(f_json)
+	f_json.close()
+	print("Person lookup loaded!")
+
+	try:
+		f_json = open('data_extracted/infobj_to_lit_map.json','r',encoding="utf8")
+	except IOError:
+		print('Need to create infobj_to_lit_map.json first. (Execute write_inflit_cont_infobj.py)')
+
+	infobj_to_lit = json.load(f_json)
+	f_json.close()
+	print("Infobox object to literal map loaded!")
+
+	f_in = open('data_extracted/filtered_infobj.txt','r', encoding="utf8")
+	f_out = open('data_extracted/infobj_transformed(inflit).txt','w+', encoding="utf8")
+	f_out2 = open('data_extracted/infobj_transformed(links).txt','w+', encoding="utf8")
+ 
+	for line in f_in:
+		splits=line.split()
+		subject=splits[0]
+		relation = splits[1]
+		literal = splits[2]
+
+		lookup_val=infobj_to_lit.get(literal)
+		if lookup_val!=None:
+			f_out.write(subject + " " + relation + " " + lookup_val +"\n")
+		elif "__" in literal:
+			continue
+		elif person_lookup.get(literal)!=None:
+			f_out2.write(line)
+		else:
+			lit_split = literal.split("/")
+			f_out.write(subject + " " + relation + ' "' + lit_split[-1][:-1].replace('_',' ') + '"\n')
+		
+
+	f_in.close()
+	f_out.close()
+	f_out2.close()
+
+	print('DONE!')
+
+if __name__ == "__main__":
+	if len(sys.argv)>1:
+		raise IOError("Overspecified")
+	normalize_infobj_to_inflits()
