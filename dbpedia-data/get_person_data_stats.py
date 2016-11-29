@@ -24,13 +24,32 @@ def get_person_data_stats():
 
 	max_index=c-1
 
-	dec=input("Please enter: 1 (original data) or 2 (cat improved data) or 3 (final data): \n")
+	print("Please enter:")
+	print("1 - original data")
+	print("2 - improved (category data)")
+	print("3 - improved (claudias data)")
+	print("4 - final actor data")
+	print("5 - final author data")
+	print("6 - final politician data")
+	print("7 - final scientist data")
+	print("8 - final sportsmen data")
+	dec=input("Input:\n")
 	if dec=='1':
 		f_in = open('data_extracted/person-data.tsv','r', encoding="utf8")
 	elif dec=='2':
 		f_in = open('data_extracted/cat-improved-person-data.tsv','r', encoding="utf8")
 	elif dec=='3':
-		f_in = open('data_extracted/final-person-data.tsv','r', encoding="utf8")
+		f_in = open('final_datasets/final-person-data.tsv','r', encoding="utf8")
+	elif dec=='4':
+		f_in = open('final_datasets/actor-data.tsv','r', encoding="utf8")
+	elif dec=='5':
+		f_in = open('final_datasets/author-data.tsv','r', encoding="utf8")
+	elif dec=='6':
+		f_in = open('final_datasets/politician-data.tsv','r', encoding="utf8")
+	elif dec=='7':
+		f_in = open('final_datasets/scientist-data.tsv','r', encoding="utf8")
+	elif dec=='8':
+		f_in = open('final_datasets/sportsmen-data.tsv','r', encoding="utf8")
 	else:
 		return
 
