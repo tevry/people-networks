@@ -26,7 +26,7 @@ num_code,alpha_2_code,alpha_3_code,en_short_name,nationality
 60,BM,BMU,Bermuda,"Bermudian, Bermudan"
 64,BT,BTN,Bhutan,Bhutanese
 68,BO,BOL,Bolivia (Plurinational State of),Bolivian
-535,BQ,BES,"Bonaire, Sint Eustatius and Saba",Bonaire
+535,BQ,BES,Bonaire,Bonaire
 70,BA,BIH,Bosnia and Herzegovina,Bosnian or Herzegovinian
 72,BW,BWA,Botswana,"Motswana, Botswanan"
 74,BV,BVT,Bouvet Island,Bouvet Island
@@ -154,7 +154,7 @@ num_code,alpha_2_code,alpha_3_code,en_short_name,nationality
 524,NP,NPL,Nepal,"Nepali, Nepalese"
 528,NL,NLD,Netherlands,"Dutch, Netherlandic"
 540,NC,NCL,New Caledonia,New Caledonian
-554,NZ,NZL,New Zealand,"New Zealand, NZ"
+554,NZ,NZL,New Zealand,New Zealand
 558,NI,NIC,Nicaragua,Nicaraguan
 562,NE,NER,Niger,Nigerien
 566,NG,NGA,Nigeria,Nigerian
@@ -165,7 +165,7 @@ num_code,alpha_2_code,alpha_3_code,en_short_name,nationality
 512,OM,OMN,Oman,Omani
 586,PK,PAK,Pakistan,Pakistani
 585,PW,PLW,Palau,Palauan
-275,PS,PSE,"Palestine, State of",Palestinian
+275,PS,PSE,Palestine,Palestinian
 591,PA,PAN,Panama,Panamanian
 598,PG,PNG,Papua New Guinea,"Papua New Guinean, Papuan"
 600,PY,PRY,Paraguay,Paraguayan
@@ -181,7 +181,7 @@ num_code,alpha_2_code,alpha_3_code,en_short_name,nationality
 643,RU,RUS,Russian Federation,Russian
 646,RW,RWA,Rwanda,Rwandan
 652,BL,BLM,Saint Barthélemy,Barthélemois
-654,SH,SHN,"Saint Helena, Ascension and Tristan da Cunha",Saint Helenian
+654,SH,SHN,Saint Helena,Saint Helenian
 659,KN,KNA,Saint Kitts and Nevis,Kittitian or Nevisian
 662,LC,LCA,Saint Lucia,Saint Lucian
 663,MF,MAF,Saint Martin (French part),Saint-Martinoise
@@ -213,9 +213,9 @@ num_code,alpha_2_code,alpha_3_code,en_short_name,nationality
 752,SE,SWE,Sweden,Swedish
 756,CH,CHE,Switzerland,Swiss
 760,SY,SYR,Syrian Arab Republic,Syrian
-158,TW,TWN,"Taiwan, Province of China","Chinese, Taiwanese"
+158,TW,TWN,Taiwan,"Chinese, Taiwanese"
 762,TJ,TJK,Tajikistan,Tajikistani
-834,TZ,TZA,"Tanzania, United Republic of",Tanzanian
+834,TZ,TZA,Tanzania,Tanzanian
 764,TH,THA,Thailand,Thai
 626,TL,TLS,Timor-Leste,Timorese
 768,TG,TGO,Togo,Togolese

@@ -10,7 +10,7 @@ def get_person_data_stats():
 		f_in = open('prop_selection.txt','r', encoding="utf8")
 	except IOError:
 		print('Please create prop_selection.txt')
-	# 0 is page name, 1 is ID, -2 is gender, -1 is wikilink
+
 	c=3
 	prop_coverage[c]=0
 	index_to_propname[c]='gender'
@@ -26,29 +26,32 @@ def get_person_data_stats():
 
 	print("Please enter:")
 	print("1 - original data")
-	print("2 - improved (category data)")
-	print("3 - improved (claudias data)")
-	print("4 - final actor data")
-	print("5 - final author data")
-	print("6 - final politician data")
-	print("7 - final scientist data")
-	print("8 - final sportsmen data")
+	print("2 - improved-person-data-v1 (category)")
+	print("3 - improved-person-data-v2 (claudia)")
+	print("4 - improved-person-data-v3 (nationality)")
+	print("5 - final actor data")
+	print("6 - final author data")
+	print("7 - final politician data")
+	print("8 - final scientist data")
+	print("9 - final sportsmen data")
 	dec=input("Input:\n")
 	if dec=='1':
 		f_in = open('data_extracted/person-data.tsv','r', encoding="utf8")
 	elif dec=='2':
-		f_in = open('data_extracted/cat-improved-person-data.tsv','r', encoding="utf8")
+		f_in = open('data_extracted/improved-person-data-v1.tsv','r', encoding="utf8")
 	elif dec=='3':
-		f_in = open('final_datasets/final-person-data.tsv','r', encoding="utf8")
+		f_in = open('final_datasets/improved-person-data-v2.tsv','r', encoding="utf8")
 	elif dec=='4':
-		f_in = open('final_datasets/actor-data.tsv','r', encoding="utf8")
+		f_in = open('final_datasets/improved-person-data-v3.tsv','r', encoding="utf8")
 	elif dec=='5':
-		f_in = open('final_datasets/author-data.tsv','r', encoding="utf8")
+		f_in = open('final_datasets/actor-data.tsv','r', encoding="utf8")
 	elif dec=='6':
-		f_in = open('final_datasets/politician-data.tsv','r', encoding="utf8")
+		f_in = open('final_datasets/author-data.tsv','r', encoding="utf8")
 	elif dec=='7':
-		f_in = open('final_datasets/scientist-data.tsv','r', encoding="utf8")
+		f_in = open('final_datasets/politician-data.tsv','r', encoding="utf8")
 	elif dec=='8':
+		f_in = open('final_datasets/scientist-data.tsv','r', encoding="utf8")
+	elif dec=='9':
 		f_in = open('final_datasets/sportsmen-data.tsv','r', encoding="utf8")
 	else:
 		return
@@ -56,6 +59,7 @@ def get_person_data_stats():
 	print('Start counting')
 	amount_people=0
 	people_overall=dict()
+	f_in.readline()
 	for line in f_in:
 		splits=line.split('\t')
 

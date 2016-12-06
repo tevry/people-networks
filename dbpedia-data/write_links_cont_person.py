@@ -32,7 +32,7 @@ def write_links_cont_person():
 		subject=splits[0]
 		value=splits[2]
 		if person_lookup.get(subject)==True and person_lookup.get(value)==True:
-			f_out.write(subject[-1:1]+" "+value[-1:1]+"\n")
+			f_out.write(subject[1:-1]+"\t"+value[1:-1]+"\n")
 
 
 	f_in.close()

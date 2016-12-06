@@ -4,6 +4,13 @@
 # Input:	prop_selection.txt
 #			person_data.tsv
 #			cat_assignment.json
+#			actor-professions.txt
+#			politician-professions.txt
+#			scientist-professions.txt
+#			sport-professions.txt
+#			writer-professions.txt
+#			category_blacklist.txt
+#			countries.csv
 
 # Output:	cat-improved-person_data.tsv
 
@@ -15,8 +22,29 @@
 import json
 import sys
 import ast
+import os
 
-def improve_person_dataset_cat():
+def load_occupations(path):
+	try:
+		f_in = open(path,'r', encoding="utf8")
+	except IOError:
+		print('Please create '+path)
+	occupation_list=[]
+	for line in f_in:
+		occupation_list.append(line.strip().lower())
+	f_in.close()
+	print('Load complete: '+path)
+	return occupation_list
+
+def check_and_add_tag(cat, occupation_list, assigned_occupation, tag):
+	for occupation in occupation_list:
+		if not (occupation in assigned_occupation) and (occupation in cat.lower()):
+			assigned_occupation.append(occupation)
+			if not(tag in assigned_occupation):
+				assigned_occupation.append(tag)
+	return
+
+def improve_person_dataset_cat(debug=False):
 	try:
 		f_json = open('data_extracted/cat_assignment.json','r',encoding="utf8")
 	except IOError:
@@ -44,38 +72,13 @@ def improve_person_dataset_cat():
 		c+=1
 	f_in.close()
 
-	#Get List of scientist occupations
-	try:
-		f_in = open('data_raw/scientist-professions.txt','r', encoding="utf8")
-	except IOError:
-		print('Please create data_raw/scientist-professions.txt')
-	sc_occupation_list=[]
-	for line in f_in:
-		sc_occupation_list.append(line.strip().lower())
-	f_in.close()
-	print('Load complete: scientist-professions.txt')
-
-	#Get List of sport occupations
-	try:
-		f_in = open('data_raw/sport-professions.txt','r', encoding="utf8")
-	except IOError:
-		print('Please create data_raw/sport-professions.txt')
-	sport_occupation_list=[]
-	for line in f_in:
-		sport_occupation_list.append(line.strip().lower())
-	f_in.close()
-	print('Load complete: sport-professions.txt')
-
-	#Get List of all occupations
-	try:
-		f_in = open('data_raw/occupations.csv','r', encoding="utf8")
-	except IOError:
-		print('Please create data_raw/occupations.csv')
-	occupation_list=[]
-	for line in f_in:
-		occupation_list.append(line.strip().lower())
-	f_in.close()
-	print('Load complete: occupations.csv')
+	#Get List of occupations
+	actor_occupation_list=load_occupations('data_raw/actor-professions.txt')
+	politician_occupation_list=load_occupations('data_raw/politician-professions.txt')
+	sc_occupation_list=load_occupations('data_raw/scientist-professions.txt')
+	sport_occupation_list=load_occupations('data_raw/sport-professions.txt')
+	writer_occupation_list=load_occupations('data_raw/writer-professions.txt')
+	
 
 	#Get List of all nationalities
 	try:
@@ -94,10 +97,31 @@ def improve_person_dataset_cat():
 	f_in.close()
 	print('Load complete: countries.csv')
 
+	#Get List of blacklisted categories
+	try:
+		f_in = open('category_blacklist.txt','r', encoding="utf8")
+	except IOError:
+		print('Please create category_blacklist.txt')
+	blacklist=dict()
+	f_in.readline()
+	for line in f_in:
+		if line.startswith('\n') or line.startswith('#'):
+			continue
+		line=line.strip()
+		blacklist[line]=True
+	f_in.close()
+	print('Load complete: category_blacklist.txt')
+
 	test_flag=False #PLS REMOVE LATER
+	if debug==True:
+		print('Writing debug output enabled')
+		os.makedirs(os.path.dirname('data_extracted/debug_occupation-matches.tsv'), exist_ok=True)
+		deb_out = open('data_extracted/debug_occupation-matches.tsv','w+',encoding="utf8")
+		deb_out_sc = open('data_extracted/debug_scientist-matches.tsv','w+',encoding="utf8")
+		deb_out_sp = open('data_extracted/debug_sportsperson-matches.tsv','w+',encoding="utf8")
 
 	f_in= open('data_extracted/person-data.tsv','r',encoding="utf8")
-	f_out= open('data_extracted/cat-improved-person-data.tsv','w+',encoding="utf8")
+	f_out= open('data_extracted/improved-person-data-v1.tsv','w+',encoding="utf8")
 
 	#Copy Column Header
 	f_out.write(f_in.readline())
@@ -107,9 +131,14 @@ def improve_person_dataset_cat():
 	for line in f_in:
 		if (c%1000==0): 
 			print(c,end="\r")
+
+		#Make sure that import is clean
 		splits=line.strip().split('\t')
+		splits = list( x.strip() for x in splits)
+
 		person=splits[0]
-		
+		isFictional=False
+
 		if person=='http://dbpedia.org/resource/Johnny_Depp':
 			test_flag=True
 
@@ -131,6 +160,10 @@ def improve_person_dataset_cat():
 				assigned_occupation=[]
 			else:
 				assigned_occupation=ast.literal_eval(assigned_occupation)
+				assigned_occupation = list( x.strip() for x in assigned_occupation)
+				if "*" in assigned_occupation:
+					assigned_occupation.remove("*")
+
 
 			# Nationality Improvement - Preperation
 			assigned_nationality=splits[prop_to_index.get('nationality')]
@@ -138,9 +171,17 @@ def improve_person_dataset_cat():
 				assigned_nationality=[]
 			else:
 				assigned_nationality=ast.literal_eval(assigned_nationality)
-
+				assigned_nationality = list( x.strip() for x in assigned_nationality)
 
 			for cat in categories:
+				if blacklist.get(cat.strip()):
+					continue
+				# If you a biography got a category starting with with "fictional_" 
+				# assume it is a fictional character and don't write it
+				if cat.startswith('fictional_'):
+					isFictional=True
+					break
+
 				# Gender Improvement - Computation
 				if (splits[prop_to_index.get('gender')]=='NA'):
 					if ('female' in cat) or ('_woman_' in cat) or ('_women_' in cat) or (cat.startswith('woman_')) or (cat.startswith('women_')):
@@ -149,27 +190,19 @@ def improve_person_dataset_cat():
 						m+=1
 
 				#Occupation Improvement - Computation
-				for occupation in sc_occupation_list:
-					if not (occupation in assigned_occupation) and (occupation in cat.lower()):
-						if test_flag==True:
-							print(occupation + ' found in '+ cat)
-						assigned_occupation.append(occupation)
-						if not('scientist' in assigned_occupation):
-							assigned_occupation.append('scientist')
+				check_and_add_tag(cat, actor_occupation_list, assigned_occupation, 'actor')
+				check_and_add_tag(cat, politician_occupation_list, assigned_occupation, 'politician')
+				check_and_add_tag(cat, sc_occupation_list, assigned_occupation, 'scientist')
+				check_and_add_tag(cat, sport_occupation_list, assigned_occupation, 'sportsperson')
+				if debug==True and "player" in cat.lower():
+					deb_out.write(cat+'\n')
 
-				for occupation in sport_occupation_list:
-					if not (occupation in assigned_occupation) and (occupation in cat.lower()):
-						if test_flag==True:
-							print(occupation + ' found in '+ cat)
-						assigned_occupation.append(occupation)
-						if not('sportsperson' in assigned_occupation):
-							assigned_occupation.append('sportsperson')
-			
-				for occupation in occupation_list:
-					if not (occupation in assigned_occupation) and (occupation in cat.lower()):
-						if test_flag==True:
-							print(occupation + ' found in '+ cat)
-						assigned_occupation.append(occupation)
+				#Hardcoded "writer"-matching
+				if not('writer' in assigned_occupation) and (('_writers' in cat.lower()) or ('writers_' in cat.lower())):
+					assigned_occupation.append('writer')
+				elif not ('songwriter' in cat.lower() or 'song_writer' in cat.lower()):
+					check_and_add_tag(cat, writer_occupation_list, assigned_occupation, 'writer')
+
 
 				#Nationality Improvement - Computation
 				cat_splits=cat.split('_')
@@ -177,10 +210,6 @@ def improve_person_dataset_cat():
 				term=cat_splits[0] #Only Check something like 'American_actor_in_the_1900'
 				if nation_lookup.get(term)!=None and not(term in assigned_nationality):
 						assigned_nationality.append(term)
-
-				#for term in cat_splits:
-				#	if nation_lookup.get(term)!=None and not(term in assigned_nationality):
-				#		assigned_nationality.append(term)
 
 			# Gender Improvement - toString
 			if (w==0 and m==0) or m==w:
@@ -205,6 +234,9 @@ def improve_person_dataset_cat():
 				assigned_nationality=str(assigned_nationality)
 				if test_flag==True:
 					print(assigned_nationality)
+
+		if isFictional:
+			continue
 
 		# Rewrite line
 		f_out.write(splits[0]+'\t'+splits[1]+'\t'+splits[2])
@@ -231,6 +263,10 @@ def improve_person_dataset_cat():
 	f_in.close()
 	f_out.close()
 
+	if debug==True:
+		deb_out.close()
+		deb_out_sc.close()
+		deb_out_sp.close()
 
 
 if __name__ == "__main__":

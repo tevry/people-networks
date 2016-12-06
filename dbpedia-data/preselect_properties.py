@@ -15,6 +15,12 @@
 import json
 import sys
 
+def clean_value(value):
+	value=value.replace('"',' ') #Remove Quotes
+	value=value.split('@en')[0] # Remove "@en"
+	value=value.replace('"',' ') #Remove leading / tailing whitespace
+	return value
+
 def preselect_properties():
 
 	f_in = open('prop_selection.txt','r', encoding="utf8")
@@ -38,12 +44,12 @@ def preselect_properties():
 			f_out.write(line)
 			if prop_assignment.get(subject)==None:
 				prop_assignment[subject]=dict()
-				prop_assignment[subject][prop]=[value.replace('"',' ').strip()]
+				prop_assignment[subject][prop]=[clean_value(value)]
 			else:
 				if prop_assignment.get(subject).get(prop)==None:
-					prop_assignment[subject][prop]=[value.replace('"',' ').strip()]
+					prop_assignment[subject][prop]=[clean_value(value)]
 				else:
-					prop_assignment[subject][prop].append(value.replace('"',' ').strip())
+					prop_assignment[subject][prop].append(clean_value(value))
 
 	f_in.close()
 	f_out.close()

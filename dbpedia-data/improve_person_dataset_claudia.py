@@ -35,13 +35,15 @@ def improve_person_dataset_claudia():
 
 	print("Apply data to previous data set")
 
-	f_in= open('data_extracted/cat-improved-person-data.tsv','r',encoding="utf8")
-	f_out= open('final_datasets/final-person-data.tsv','w+',encoding="utf8")
+	f_in= open('data_extracted/improved-person-data-v1.tsv','r',encoding="utf8")
+	f_out= open('final_datasets/improved-person-data-v2.tsv','w+',encoding="utf8")
 
 	#Copy Column Header
 	f_out.write(f_in.readline())
 	for line in f_in:
 		splits=line.strip().split('\t')
+		splits = list( x.strip() for x in splits)
+		
 		uri=splits[0]
 		gender=splits[3]
 		f_out.write(splits[0])

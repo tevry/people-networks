@@ -1,10 +1,10 @@
 #####################################
 # build_profession_datasets
 
-# Input:	final-person-data.tsv
+# Input:	improved-person-data-v3.tsv
 
 # Output:	actor-data.tsv	
-# 			author-data.tsv	
+# 			writer-data.tsv	
 # 			politician-data.tsv	
 # 			sportsmen-data.tsv	
 # 			scientist-data.tsv	
@@ -19,11 +19,11 @@ import ast
 
 def build_profession_datasets():
 
-	f_in = open('final_datasets/final-person-data.tsv','r',encoding='utf-8')
+	f_in = open('final_datasets/improved-person-data-v3.tsv','r',encoding='utf-8')
 
 	print("Start building")
 	f_out_actor = open('final_datasets/actor-data.tsv','w+',encoding='utf-8')
-	f_out_author = open('final_datasets/author-data.tsv','w+',encoding='utf-8')
+	f_out_author = open('final_datasets/writer-data.tsv','w+',encoding='utf-8')
 	f_out_politician = open('final_datasets/politician-data.tsv','w+',encoding='utf-8')
 	f_out_sportsmen = open('final_datasets/sportsmen-data.tsv','w+',encoding='utf-8')
 	f_out_scientist = open('final_datasets/scientist-data.tsv','w+',encoding='utf-8')

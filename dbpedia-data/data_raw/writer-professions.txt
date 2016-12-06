@@ -1,0 +1,5 @@
+author
+reporter
+journalist
+screenwriter
+novelist

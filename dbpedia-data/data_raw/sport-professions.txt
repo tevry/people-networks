@@ -1,9 +1,15 @@
 Coach
 Player
+Baseballer
+Baseball Player
 Footballer
+Football Player
 Basketballer
+Basketball Player
 Golfer
 Golf Club Professional
 Sportsman
 Sportsperson
 Sportswoman
+Tennis
+Tennis Player

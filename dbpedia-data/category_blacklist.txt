@@ -1,0 +1,26 @@
+#players and coaches
+acting_coaches
+bongo_players
+cello_players
+coachbuilders
+conga_players
+cosplayers
+drum_players
+ghatam_players
+greek_coaches
+guitar_players
+guqin_players
+horn_players
+koto_players
+life_coaches
+life_coaching
+oud_players
+saipa_players
+sarod_players
+sitar_players
+venu_players
+viol_players
+violin_players
+vocal_coaches
+voice_coaches
+zither_players
