@@ -1,3 +1,18 @@
+#####################################
+# label_links
+
+# Input:	linkprop_assignment.json
+#			filtered_links.txt
+
+# Output:	link-data.tsv
+
+# Description:
+# Joins all the the labeled links with the complete set of links between people
+# -> Labels the links if possible
+
+# @author: mreif
+#####################################
+
 import json
 import sys
 
@@ -16,10 +31,12 @@ def label_links():
 	#Desired Formatting: Startperson \t Endperson \t Label \n
 
 	for line in f_in:
+		# Read all the links between people
 		splits=line.split()
 		start = splits[0][1:-1]
 		end = splits[1][1:-1]
 		
+		# If this relation has a value assigned through a infobj, it gets a labeled relation, else it is unknown
 		if  linkproperty_assignment.get(start)==None or linkproperty_assignment.get(start).get(end)==None:
 			f_out.write(start + '\t' + end + '\tunknown\n')
 		else:
@@ -27,7 +44,7 @@ def label_links():
 
 	f_out.close()
 	f_in.close()
-	print("DONE")
+	print("label_links - DONE")
 
 if __name__ == "__main__":
 	if len(sys.argv)>1:

@@ -8,6 +8,8 @@
 
 # Description:
 # Join the original infobox literal list with the extracted literals from the infobox objects
+
+# @author: mreif
 #####################################
 
 import sys
@@ -20,9 +22,11 @@ def join_inflits():
 
 	print('Start processing: filtered_inflit.txt')
 	for line in f_in:
+		# Read all original DBpedia inflits
 		splits=line.split()
 		subject=splits[0][1:-1]
 		relation = splits[1].split("/")[-1][:-1]
+		# Transform in to normalized form
 		literal = ' '.join([x.lower().replace("\t"," ").replace(".","").replace(",","") for x in splits[2:]])
 		literal = literal.split('^^')[0]
 		f_out.write(subject + "\t" +relation+ "\t"+literal+"\n")		
@@ -32,9 +36,11 @@ def join_inflits():
 	print('Start processing: infobj_transformed(inflit).txt')
 	f_in = open('data_extracted/infobj_transformed(inflit).txt','r', encoding="utf8")
 	for line in f_in:
+		# Read all from DBpedia objects extracted inflits
 		splits=line.split()
 		subject=splits[0][1:-1]
 		relation = splits[1].split("/")[-1][:-1]
+		# Transform in to normalized form
 		literal = ' '.join([x.lower().replace("\t"," ").replace(".","").replace(",","") for x in splits[2:]])
 		f_out.write(subject + "\t" +relation+ "\t"+literal+"\n")		
 	f_in.close()
@@ -42,7 +48,7 @@ def join_inflits():
 
 	f_out.close()
 
-	print('DONE!')
+	print('join_inflits - DONE')
 
 if __name__ == "__main__":
 	if len(sys.argv)>1:

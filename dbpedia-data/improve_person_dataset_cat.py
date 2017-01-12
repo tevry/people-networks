@@ -17,6 +17,8 @@
 # Description:
 # Extend the property assignment of DBpedia with values extracted from the categories
 # Currently Improving: Gender, Occupations, Nationality
+
+# @author: mreif
 #####################################
 
 import json
@@ -53,12 +55,12 @@ def improve_person_dataset_cat(debug=False):
 	f_json.close()
 	print("Load complete: cat_assignment.json")
 
-	#Get indeces of used props
 	try:
 		f_in = open('prop_selection.txt','r', encoding="utf8")
 	except IOError:
 		print('Please create prop_selection.txt')
 
+	#Get indeces of used props
 	prop_to_index=dict()
 	index_to_prop=dict()
 	# 0 is page name, 1 is ID, 2 is wikilink, 3 is gender, 4ff are props
@@ -112,7 +114,6 @@ def improve_person_dataset_cat(debug=False):
 	f_in.close()
 	print('Load complete: category_blacklist.txt')
 
-	test_flag=False #PLS REMOVE LATER
 	if debug==True:
 		print('Writing debug output enabled')
 		os.makedirs(os.path.dirname('data_extracted/debug_occupation-matches.tsv'), exist_ok=True)
@@ -126,7 +127,7 @@ def improve_person_dataset_cat(debug=False):
 	#Copy Column Header
 	f_out.write(f_in.readline())
 
-	# This should probably be computed in parallel
+	#Remark: This should probably be computed in parallel
 	c=0
 	for line in f_in:
 		if (c%1000==0): 
@@ -139,14 +140,8 @@ def improve_person_dataset_cat(debug=False):
 		person=splits[0]
 		isFictional=False
 
-		if person=='http://dbpedia.org/resource/Johnny_Depp':
-			test_flag=True
-
 		categories=cat_assignment.get(person)
 		if categories!=None:
-
-			if test_flag==True:
-				print(categories)
 
 			# Gender Improvement - Preperation
 			gender=splits[prop_to_index.get('gender')]
@@ -163,7 +158,6 @@ def improve_person_dataset_cat(debug=False):
 				assigned_occupation = list( x.strip() for x in assigned_occupation)
 				if "*" in assigned_occupation:
 					assigned_occupation.remove("*")
-
 
 			# Nationality Improvement - Preperation
 			assigned_nationality=splits[prop_to_index.get('nationality')]
@@ -203,10 +197,8 @@ def improve_person_dataset_cat(debug=False):
 				elif not ('songwriter' in cat.lower() or 'song_writer' in cat.lower()):
 					check_and_add_tag(cat, writer_occupation_list, assigned_occupation, 'writer')
 
-
 				#Nationality Improvement - Computation
 				cat_splits=cat.split('_')
-
 				term=cat_splits[0] #Only Check something like 'American_actor_in_the_1900'
 				if nation_lookup.get(term)!=None and not(term in assigned_nationality):
 						assigned_nationality.append(term)
@@ -224,16 +216,12 @@ def improve_person_dataset_cat(debug=False):
 				assigned_occupation='NA'
 			else:
 				assigned_occupation=str(assigned_occupation)
-				if test_flag==True:
-					print(assigned_occupation)
 
 			# Nationality Improvement - toString
 			if assigned_nationality==[]:
 				assigned_nationality='NA'
 			else:
 				assigned_nationality=str(assigned_nationality)
-				if test_flag==True:
-					print(assigned_nationality)
 
 		if isFictional:
 			continue
@@ -243,21 +231,13 @@ def improve_person_dataset_cat(debug=False):
 		for i in range(3,len(splits)):
 			if index_to_prop.get(i)=='gender':
 				f_out.write('\t'+gender)
-				if test_flag==True:
-					print(gender)
 			elif index_to_prop.get(i)=='occupation':
 				f_out.write('\t'+assigned_occupation)
-				if test_flag==True:
-					print(assigned_occupation)
 			elif index_to_prop.get(i)=='nationality':
 				f_out.write('\t'+assigned_nationality)
-				if test_flag==True:
-					print(assigned_nationality)
 			else:
 				f_out.write('\t'+splits[i])
 		f_out.write('\n')
-
-		test_flag=False
 		c+=1
 
 	f_in.close()
@@ -268,6 +248,7 @@ def improve_person_dataset_cat(debug=False):
 		deb_out_sc.close()
 		deb_out_sp.close()
 
+	print('improve_person_dataset_cat - DONE')
 
 if __name__ == "__main__":
 	if len(sys.argv)>1:

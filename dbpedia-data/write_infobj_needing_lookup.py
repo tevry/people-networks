@@ -11,6 +11,8 @@
 #
 # e.g. "Johnny_Depp"'s occupation is linked to "Johnny_Depp__1"
 # the actual literal property can be found in the "title" of that page and needs to be resolved
+
+# @author: mreif
 #####################################
 
 import json
@@ -25,10 +27,12 @@ def write_infobj_needing_lookup():
 
 	next(f_in) #First Line is comment with date
 	for line in f_in:
+		# Read the infobjects related to persons
 		splits=line.split()
 		subject=splits[0]
 		ref=splits[2]
 		if '__' in ref:
+			# Find all entities containing '__', which are usually only references to the actual literal
 			infobj_lookup[ref]=True
 			f_out.write(ref+'\n')
 
@@ -38,7 +42,7 @@ def write_infobj_needing_lookup():
 	with open('data_extracted/infobj_lookup.json','w+', encoding='utf8') as f_json:
 		json.dump(infobj_lookup, f_json, ensure_ascii=False)
 
-	print('DONE!')
+	print('write_infobj_needing_lookup - DONE')
 
 if __name__ == "__main__":
 	if len(sys.argv)>1:

@@ -9,13 +9,16 @@
 
 # Description:
 # Take all wanted properties defined in prop_selection and filter the literals. Add multiple values of a property to a list.
-# Store the the list by property name per person.
+# Map: *page of person* -> ( *prop* -> [*value*])
+
+# @author: mreif
 #####################################
 
 import json
 import sys
 
 def clean_value(value):
+	# Transform into desired form
 	value=value.replace('"',' ') #Remove Quotes
 	value=value.split('@en')[0] # Remove "@en"
 	value=value.replace('"',' ') #Remove leading / tailing whitespace
@@ -27,6 +30,7 @@ def preselect_properties():
 	prop_filter=set()
 	for line in f_in:
 		prop_filter.add(line.strip())
+	print("Load complete: prop_selection.txt")
 	f_in.close()
 
 	f_in = open('data_extracted/literals_final.txt','r', encoding="utf8")
@@ -35,12 +39,15 @@ def preselect_properties():
 	prop_assignment=dict()
 
 	for line in f_in:
+		# Read all literals
 		splits=line.split()
 		subject=splits[0]
 		prop=splits[1]
 		value=" ".join(splits[2:])
 
 		if prop in prop_filter:
+			# Only select properties we actually need and organize them in a list (after cleaning)
+			# Defined in prop_selection.txt
 			f_out.write(line)
 			if prop_assignment.get(subject)==None:
 				prop_assignment[subject]=dict()
@@ -57,7 +64,7 @@ def preselect_properties():
 	with open('data_extracted/prop_assignment.json','w+', encoding='utf8') as f_json:
 		json.dump(prop_assignment, f_json, ensure_ascii=False)
 
-	print('DONE!')
+	print('preselect_properties - DONE')
 
 if __name__ == "__main__":
 	if len(sys.argv)>1:

@@ -7,6 +7,8 @@
 
 # Description:
 # Merges certain nationalities to have an easier selection later
+
+# @author: mreif
 #####################################
 
 import json
@@ -15,13 +17,11 @@ import ast
 
 def normalize_nationality():
 
-	#Open improvement v2
+	# Load countries and nationality clause that should be matched
 	try:
 		f_in = open('data_raw/countries.csv','r', encoding="utf8")
 	except IOError:
 		print('Please create data_raw/countries.csv')
-
-	print("Loading country data")
 
 	nationality_lookup=dict()
 	nation_to_nationality=dict()
@@ -39,8 +39,7 @@ def normalize_nationality():
 				nation_to_nationality[nationality_alt]=nationality
 		nation_to_nationality[nation]=nationality
 	f_in.close()
-
-	print("Apply data to improved-person-data-v2.tsv")
+	print('Load complete: countries.csv')
 
 	try:
 		f_in = open('final_datasets/improved-person-data-v2.tsv','r', encoding="utf8")
@@ -65,28 +64,36 @@ def normalize_nationality():
 		return
 	
 	for line in f_in:
+		# Read all lines and get nationality tag
 		splits=line.strip().split('\t')
 		nationality_content=splits[col]
 		if (nationality_content=='NA'):
+			# if the nationality tag is "NA" just write the line and continue
 			f_out.write(line)
 			continue
 		
-		nationalities=ast.literal_eval(nationality_content)
+		nationalities=ast.literal_eval(nationality_content) # Load nationaliy list
 		for i in range(0,len(nationalities)):
+			#Iterate over all assigned nationalites
 			nationality=nationalities[i].strip().lower()
 			if nation_to_nationality.get(nationality)!=None:
+				# If a nationality fits, assign it
 				nationalities[i]=nation_to_nationality.get(nationality)
 				continue
 
 			
 			for word in nationality.split(' '):
+				# Handle multi-word nationality tags
 				if nationality_lookup.get(word[:-1])!=None:
+					# Cases like "americans"
 					nationalities[i]=word[:-1]
 					continue
 				if nationality_lookup.get(word)!=None:
+					# Cases like "american citizen" -> american gets matched
 					nationalities[i]=word
 					continue
 				if nation_to_nationality.get(word)!= None:
+					# Cases like "citizen of germany"
 					nationalities[i]=nation_to_nationality.get(word)
 					continue
 
@@ -113,7 +120,7 @@ def normalize_nationality():
 	f_in.close()
 	f_out.close()
 
-	print("DONE")
+	print("normalize_nationality - DONE")
 
 
 

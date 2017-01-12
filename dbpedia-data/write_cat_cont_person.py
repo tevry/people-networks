@@ -9,6 +9,9 @@
 
 # Description:
 # Build a dictionary that contains all categories assigned to a person based on DBpedia's dataset
+# Maps: "page of person" -> list of assigned categories
+
+# @author: mreif
 #####################################
 
 import json
@@ -20,7 +23,9 @@ def write_cat_cont_person():
 	except IOError:
 		print('Need to create person_lookup.json first. (Execute write_personlist_by_type.py)')
 
+	# Load person lookup created by write_personlist_by_type.py (Maps: *page of person* -> True, if it is a Person)
 	person_lookup = json.load(f_json)
+	print("Load complete: person_lookup.json")
 	f_json.close()
 
 	cat_assignment = dict()
@@ -30,11 +35,13 @@ def write_cat_cont_person():
 	
 	next(f_in) #First Line is comment with date
 	for line in f_in:
+		# Read all category assignments
 		splits=line.split()
 		person=splits[0]
 		if person_lookup.get(person)==True:
 			person=person[1:-1]
 			cat=splits[2].split('Category:')[1][:-1].lower()
+			# If it category belongs to a person page, add it to the list of categories
 			if cat_assignment.get(person)==None:
 				cat_assignment[person]=[cat]
 			else:
@@ -47,7 +54,7 @@ def write_cat_cont_person():
 	with open('data_extracted/cat_assignment.json','w+', encoding='utf8') as f_json:
 		json.dump(cat_assignment, f_json, ensure_ascii=False)
 
-	print('DONE!')
+	print('write_cat_cont_person - DONE')
 
 if __name__ == "__main__":
 	if len(sys.argv)>1:

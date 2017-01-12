@@ -9,6 +9,8 @@
 
 # Description:
 # Build a dictionary that contains the gender assigned to a person based on DBpedia's dataset
+
+# @author: mreif
 #####################################
 
 import json
@@ -20,7 +22,9 @@ def write_gender_cont_person():
 	except IOError:
 		print('Need to create person_lookup.json first. (Execute write_personlist_by_type.py)')
 
+	# Load person lookup created by write_personlist_by_type.py (Maps: *page of person* -> True, if it is a Person)
 	person_lookup = json.load(f_json)
+	print("Load complete: person_lookup.json")
 	f_json.close()
 
 	f_in = open('data_raw/genders_en.ttl','r', encoding="utf8")
@@ -30,10 +34,12 @@ def write_gender_cont_person():
 
 	next(f_in) #First Line is comment with date
 	for line in f_in:
+		# Read gender assignments of DBpedia
 		splits=line.split()
 		subject=splits[0]
 		value=splits[2]
 		if person_lookup.get(subject)==True:
+			# Only keep the gender assignment if it belongs to a person
 			f_out.write(line)
 			gender_assignment[subject[1:-1]]=value
 
@@ -43,7 +49,7 @@ def write_gender_cont_person():
 	with open('data_extracted/gender_assignment.json','w+', encoding='utf8') as f_json:
 		json.dump(gender_assignment, f_json, ensure_ascii=False)
 
-	print('DONE!')
+	print('write_gender_cont_person - DONE')
 
 if __name__ == "__main__":
 	if len(sys.argv)>1:

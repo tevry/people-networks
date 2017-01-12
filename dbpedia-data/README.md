@@ -1,6 +1,6 @@
 dbpedia-data
 -----
-Contains all the code to build the starting points of our project. A visualization of the process and the needed / generated files can be found in the dataPipeline.pdf. The link-data is currently ignored and only the person-data is build.
+Contains the code to build the starting points of our project. A visualization of the process and the needed / generated files of each subprogram can be found in the dataPipeline.pdf. The link-data is currently ignored and only the person-data is build.
 
 - **data_raw:** Should contain the raw DBpedia data sets and the dataset JProf. Dr. Wagner provided. Only includes small lists used for profession/nationality matching etc. The other datasets need to be downloaded manually.
   - DBpedia sets that are necessary:

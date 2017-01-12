@@ -8,8 +8,10 @@
 # Output:	person_data.tsv (combination of raw DBpedia values)
 
 # Description:
-# Build the actual dataset out of the unchanged DBpedia property values.
-# Contains all persons. Rather incomplete.
+# Build the actual dataset out of the unaltered DBpedia property values.
+# Contains all persons. Result is rather incomplete and needs improvement.
+
+# @author: mreif
 #####################################
 
 import json
@@ -25,6 +27,7 @@ def build_person_dataset():
 	prop_categories=[]
 	for line in f_in:
 		prop_categories.append(line.strip())
+	print("Load complete: prop_selection.txt")
 	f_in.close()
 
 	try:
@@ -33,8 +36,8 @@ def build_person_dataset():
 		print('Need to create prop_assignment.json first. (Execute preselect_properties.py)')
 
 	property_assignment = json.load(f_json)
-	f_json.close()
 	print("Load complete: property_assignment.json")
+	f_json.close()
 
 	try:
 		f_json = open('data_extracted/gender_assignment.json','r',encoding="utf8")
@@ -69,21 +72,25 @@ def build_person_dataset():
 
 	ID=1
 	for person, assigned_props in property_assignment.items():
+		# Iteratve over all person urls and the assigned props and add an ID
 		person_id_map[person]=ID
 		f_out.write(person+'\t'+str(ID))
 
 		wikilink_value=wikilinks_assignment.get(person)
+		#Try to assign wiki URL to each dbpedia URL (should always be possible)
 		if wikilink_value==None:
 			f_out.write('\t' + 'NA')
 		else:
 			f_out.write('\t' + wikilink_value)
 
 		gender_value=gender_assignment.get(person)
+		#Try to assign gender to each dbpedia URL (rather incomplete data)
 		if gender_value==None:
 			f_out.write('\t' + 'NA')
 		else:
 			f_out.write('\t' + gender_value)
 
+		# Assign all other props
 		for prop in prop_categories:
 			value = assigned_props.get(prop)
 			if value==None:
@@ -96,7 +103,7 @@ def build_person_dataset():
 		ID+=1
 
 	f_out.close()
-	print("DONE")
+	print("build_person_dataset.py - DONE")
 
 
 if __name__ == "__main__":
