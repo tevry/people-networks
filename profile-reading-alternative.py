@@ -66,6 +66,7 @@ while True:
     if (unread_profile):
 
         # DEBUG
+        # unread_profile="Todd_Rokita"
         # print("Start: "+unread_profile)
 
         # Init biography page and output dict
@@ -132,9 +133,8 @@ while True:
             # Months are equal at this point
             # END LOOP
 
-        # DEBUG
         # print("Got Timestamps: " + str(relevant_ids))
-        
+        # print(str(len(relevant_ids))+" Elements")
 
         if len(relevant_ids)==0:
             # Catching case where someone moved the page (recently)
@@ -148,16 +148,30 @@ while True:
             write_read_profile(profile_tracker, unread_profile, "NA" )
             continue
             
+        list_rel_ids = list(relevant_ids)
+        chunks = []
+        upper = 50
+        lower = 0
+        while (lower < len(relevant_ids)):
+            chunks.append(list_rel_ids[lower:upper])
+            lower = upper
+            upper += 50
+
+        count = 0
         #look for article from the last minute of 1 st day of month.
         #Start from there and go back until you find a article which will give the state of article at that point
-        relevant_revision_data = profile_page.revisions(list(relevant_ids) ,prop='ids|timestamp|extlinks')
-        for article in relevant_revision_data:
-            article_id = article['revid']
-            # Assign the data of the article to all dates, where this page was online
-            # NOTE: profile_list only contains data at the points in time, where the page already existed, if you try to fetch it use dict.get() so you will receive None and no error
-            for date in id_to_date_map[article_id]:
-                profile_list[str(date["year"])+'-'+str(date["month"])] = article
-            break
+        for chunk in chunks:
+            relevant_revision_data = wiki.revisions( chunk ,prop='ids|timestamp|content')
+            for article in relevant_revision_data:
+                count+=1
+                article_id = article['revid']
+                # Assign the data of the article to all dates, where this page was online
+                # NOTE: profile_list only contains data at the points in time, where the page already existed, if you try to fetch it use dict.get() so you will receive None and no error
+                for date in id_to_date_map[article_id]:
+                    profile_list[str(date["year"])+'-'+str(date["month"])] = article
+
+        # print(str(count)+" Retrieved")
+        #assert(count==len(relevant_ids))
 
         profile_count += 1
         end_profile_time = time.time()
