@@ -8,7 +8,7 @@ import os
 from create_profile_reading_tracker import create_profile_reading_tracker
 
 
-file_name = 'splits/politician-data-0-1000'
+file_name = 'splits1000/politician-data-0-1000'
 tracker_file = file_name+'-tracker.csv' # make sure the file is in parallel to this program
 
 '''
@@ -66,7 +66,7 @@ while True:
     if (unread_profile):
 
         # DEBUG
-        # unread_profile="Todd_Rokita"
+        # unread_profile="Angela_Merkel"
         # print("Start: "+unread_profile)
 
         # Init biography page and output dict
@@ -91,7 +91,7 @@ while True:
 
             # DEBUG
             # print("---------------")
-            # print("Next Revision: "+ str(timestamp.tm_mday) + " . " +str(timestamp.tm_mon)+ " . " + str(timestamp.tm_year))
+            # print("Current Revision: "+ str(timestamp.tm_mday) + " . " +str(timestamp.tm_mon)+ " . " + str(timestamp.tm_year))
             # print(str(dates[date_ind]["year"]) + " <= " + str(timestamp.tm_year) + " = " + str(dates[date_ind]["year"] <= timestamp.tm_year))
             # print(str(dates[date_ind]["year"]) + " == " + str(timestamp.tm_year) + " and " + str(dates[date_ind]["month"]) + " <= " + str(timestamp.tm_mon) + " = " + str((dates[date_ind]["year"] == timestamp.tm_year and dates[date_ind]["month"] <= timestamp.tm_mon)))
 
@@ -109,13 +109,12 @@ while True:
                 # print("Assigned to (year-filter): " +str(dates[date_ind]["month"]) +' . '+ str(dates[date_ind]["year"]))
 
                 relevant_ids.add(timestamp_id)
-                date_ind+=1
-
                 # Build a list of all interval dates that this revision is assigned to
                 if id_to_date_map.get(timestamp_id)==None:
                     id_to_date_map[timestamp_id]=[]
                 id_to_date_map[timestamp_id].append(dates[date_ind])
-
+                # Move Interval border
+                date_ind+=1
             # Note: Years are equal at this point
 
             # Same as the "year adjustment loop" before -> adjust months
@@ -125,13 +124,15 @@ while True:
                 # print("Assigned to (month-filter): " +str(dates[date_ind]["month"]) +' . '+ str(dates[date_ind]["year"]))
 
                 relevant_ids.add(timestamp_id)
-                date_ind+=1
-                # Build a list of all dates that this revision is assigned to
+                
+                # Build a list of all interval dates that this revision is assigned to
                 if id_to_date_map.get(timestamp_id)==None:
                     id_to_date_map[timestamp_id]=[]
                 id_to_date_map[timestamp_id].append(dates[date_ind])
-            # Months are equal at this point
-            # END LOOP
+                # Move Interval border
+                date_ind+=1
+            # Note: Months are equal at this point
+        # END LOOP
 
         # print("Got Timestamps: " + str(relevant_ids))
         # print(str(len(relevant_ids))+" Elements")
