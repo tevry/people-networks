@@ -4,11 +4,13 @@ from mwclient import Site
 import datetime
 import time
 import os
+import wikitextparser as wtp
+
 
 from create_profile_reading_tracker import create_profile_reading_tracker
 
 
-file_name = 'splits/politician-data-0-1000'
+file_name = 'split-dbpedia/politician-data-0-100'
 tracker_file = file_name+'-tracker.csv' # make sure the file is in parallel to this program
 
 '''
@@ -29,12 +31,13 @@ if not os.path.exists(tracker_file):
 def read_profile_tracker() : 
     global profile_tracker
     profile_tracker = pd.read_csv(tracker_file,encoding="utf-8")
-    profile_tracker = profile_tracker[['handle','finished_reading','time_taken_in_mins']]
+    profile_tracker = profile_tracker[['handle','ID','finished_reading','time_taken_in_mins']]
 
 def get_unread_profile(profile_tracker):
     data_to_be_read = profile_tracker[profile_tracker['finished_reading'] == False]
     if(data_to_be_read.shape[0] > 0) :
-        return data_to_be_read.iloc[0]['handle']
+        #returns the name and ID
+        return [data_to_be_read.iloc[0]['handle'],data_to_be_read.iloc[0]['ID']]
     else:
         return None
     
@@ -63,6 +66,8 @@ while True:
     #jump on to the next profile until everything is over
     start_profile_time = time.time()
     unread_profile = get_unread_profile(profile_tracker)
+    #unread_profile[0] - holds the name
+    #unread_profile[1] - holds the ID
     if (unread_profile):
 
         # DEBUG
@@ -70,7 +75,7 @@ while True:
         # print("Start: "+unread_profile)
 
         # Init biography page and output dict
-        profile_page = wiki.pages[unread_profile]
+        profile_page = wiki.pages[unread_profile[0]]
         profile_list = dict()
 
         # Get all revisions of the biography page
@@ -143,11 +148,14 @@ while True:
             # -> would break the algorithm -> SKIP AND DONT WRITE!
             profile_count += 1
             end_profile_time = time.time()
-            print(profile_count,') '+unread_profile +' has changed!! No data retrieved '+'time taken(mins) - ',(end_profile_time - start_profile_time)/60)
+            print(profile_count,') '+unread_profile[0] +' has changed!! No data retrieved '+'time taken(mins) - ',(end_profile_time - start_profile_time)/60)
             # Changed time taken in the output to "NA" so you can retrieve unmatched cases if desired
-            write_read_profile(profile_tracker, unread_profile, "NA" )
+            write_read_profile(profile_tracker, unread_profile[0], "NA" )
             continue
             
+        #get the content of all ids that have been collected. But the API is capable of dealing with only 50 articles at
+        # a time. So form chunks of articles of size 50 and collect one by one
+        
         list_rel_ids = list(relevant_ids)
         chunks = []
         upper = 50
@@ -158,31 +166,34 @@ while True:
             upper += 50
 
         count = 0
-        #look for article from the last minute of 1 st day of month.
-        #Start from there and go back until you find a article which will give the state of article at that point
+        
         for chunk in chunks:
             relevant_revision_data = wiki.revisions( chunk ,prop='ids|timestamp|content')
             for article in relevant_revision_data:
                 count+=1
                 article_id = article['revid']
+                # convert the content into wiki links and store only that
+                wt = wtp.parse(article['*'])
+                # replace the space with under_score and the rest seems to fine
+                # commas are also present in URL
+                temp_links = [wi.target.replace(' ','_') for wi in wt.wikilinks]
+                article['*'] = temp_links
                 # Assign the data of the article to all dates, where this page was online
                 # NOTE: profile_list only contains data at the points in time, where the page already existed, if you try to fetch it use dict.get() so you will receive None and no error
                 for date in id_to_date_map[article_id]:
-                    profile_list[str(date["year"])+'-'+str(date["month"])] = article
-
-        # print(str(count)+" Retrieved")
-        #assert(count==len(relevant_ids))
+                    temp = str(date["year"]).zfill(4)+'_'+str(date["month"]).zfill(2)
+                    profile_list[temp] = article
 
         profile_count += 1
         end_profile_time = time.time()
-        print(profile_count,') '+unread_profile +' is read. '+'time taken(mins) - ',(end_profile_time - start_profile_time)/60)
+        print(profile_count,') '+unread_profile[0] +' is read. '+'time taken(mins) - ',(end_profile_time - start_profile_time)/60)
         
           
         # DEBUG - Comment the following lines if you dont want to write  
 
         # push the content to the file and update the tracker file  (this is done because even if program crashes - we will be able to resume)  
-        pickle.dump(profile_list,open(base_path + '/'+unread_profile,'wb'))
-        write_read_profile(profile_tracker, unread_profile, (end_profile_time - start_profile_time)/60 )
+        pickle.dump(profile_list,open(base_path + '/'+str(unread_profile[1]),'wb'))
+        write_read_profile(profile_tracker, unread_profile[0], (end_profile_time - start_profile_time)/60 )
 
     else :
         print('Hooray!!!!!!! The job is over.')
@@ -194,9 +205,4 @@ while True:
 end_time = time.time()
 print('Total Time taken (in mins)-',(end_time - start_time) / 60) 
 print('No. of profiles read :',profile_count)
-
-
-#profile_list
-#unread_profile
-#pickle.dump(profile_list,open('profile-data//'+unread_profile,'wb'))
 
