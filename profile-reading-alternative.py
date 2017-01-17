@@ -177,7 +177,8 @@ while True:
                 # replace the space with under_score and the rest seems to fine
                 # commas are also present in URL
                 temp_links = [wi.target.replace(' ','_') for wi in wt.wikilinks]
-                article['*'] = temp_links
+                #duplicate links are removed
+                article['*'] = list(set(temp_links))
                 # Assign the data of the article to all dates, where this page was online
                 # NOTE: profile_list only contains data at the points in time, where the page already existed, if you try to fetch it use dict.get() so you will receive None and no error
                 for date in id_to_date_map[article_id]:
