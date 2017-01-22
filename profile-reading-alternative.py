@@ -18,7 +18,7 @@ to store the profile data. if the folder not present then it will create it
 no path delimiters please. don't use // '''
 base_path = 'profile-data' 
 
-user_agent = 'Uni Koblenz-Landau student, marcelreif@uni-koblenz.de'
+user_agent = 'Uni Koblenz-Landau student, kandhaamy@uni-koblenz.de'
 wiki = Site(host='en.wikipedia.org', clients_useragent=user_agent)
 
 if(not os.path.exists(base_path)):
@@ -173,13 +173,18 @@ while True:
             for article in relevant_revision_data:
                 count+=1
                 article_id = article['revid']
-                # convert the content into wiki links and store only that
-                wt = wtp.parse(article['*'])
-                # replace the space with under_score and the rest seems to fine
-                # commas are also present in URL
-                temp_links = [wi.target.replace(' ','_') for wi in wt.wikilinks]
-                #duplicate links are removed
-                article['*'] = list(set(temp_links))
+                
+                if('*' in article.keys()):
+                    # convert the content into wiki links and store only that
+                    wt = wtp.parse(article['*'])
+                    # replace the space with under_score and the rest seems to fine
+                    # commas are also present in URL
+                    temp_links = [wi.target.replace(' ','_') for wi in wt.wikilinks]
+                    #duplicate links are removed
+                    article['*'] = list(set(temp_links))
+                else:
+                    print(article_id)
+                    article['*'] = []
                 # Assign the data of the article to all dates, where this page was online
                 # NOTE: profile_list only contains data at the points in time, where the page already existed, if you try to fetch it use dict.get() so you will receive None and no error
                 for date in id_to_date_map[article_id]:
@@ -200,6 +205,7 @@ while True:
     else :
         print('Hooray!!!!!!! The job is over.')
         break
+    
 
     # DEBUG - Only run one person
     # break
