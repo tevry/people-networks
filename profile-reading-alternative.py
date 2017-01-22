@@ -10,7 +10,7 @@ import wikitextparser as wtp
 from create_profile_reading_tracker import create_profile_reading_tracker
 
 
-file_name = 'split-dbpedia/politician-data-0-100'
+file_name = 'politician-data'
 tracker_file = file_name+'-tracker.csv' # make sure the file is in parallel to this program
 
 '''
