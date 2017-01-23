@@ -11,8 +11,8 @@ def create_profile_reading_tracker(file_name, tracker_file_name) :
     #create a data frame with handle, finish reading boolean and time taken columns
     handle_frame = pd.DataFrame(data=handle_list, columns=['handle'])
     handle_frame['ID'] = pol['ID']
-    handle_frame['finished_reading'] = False
-    handle_frame['time_taken_in_mins'] = 0.0
+    #handle_frame['finished_reading'] = False
+    #handle_frame['time_taken_in_mins'] = 0.0
     handle_frame.to_csv(tracker_file_name,encoding="utf-8")
     
 
